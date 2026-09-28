@@ -1,1367 +1,746 @@
-```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>SAMBLER — Preview</title>
-
-<style>
-:root{
-  --bg:#f1efff;
-  --surface:rgba(255,255,255,.72);
-  --surface2:rgba(255,255,255,.9);
-  --text:#211d32;
-  --muted:#817b91;
-  --accent:#705cff;
-  --accent2:#ff6ba8;
-  --border:rgba(255,255,255,.85);
-  --shadow:0 24px 70px rgba(72,55,130,.16);
-}
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  color:var(--text);
-
-  background:
-    radial-gradient(
-      circle at 5% 5%,
-      #ffd7e8 0,
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 95% 10%,
-      #ccc7ff 0,
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 50% 100%,
-      #d7f5ff 0,
-      transparent 35%
-    ),
-    var(--bg);
-}
-
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.25;
-
-  background-image:
-    linear-gradient(
-      rgba(255,255,255,.6) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.6) 1px,
-      transparent 1px
-    );
-
-  background-size:30px 30px;
-}
-
-.app{
-  position:relative;
-  width:min(1120px,100%);
-  margin:auto;
-  padding:24px 18px 60px;
-}
-
-/* HEADER */
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:28px;
-}
-
-.brand h1{
-  margin:0;
-
-  font-size:16px;
-  line-height:1;
-
-  font-weight:950;
-  letter-spacing:.25em;
-}
-
-.brand p{
-  margin:7px 0 0;
-
-  color:var(--muted);
-
-  font-size:10px;
-  font-weight:700;
-
-  letter-spacing:.16em;
-}
-
-.badge{
-  padding:8px 12px;
-
-  border:1px solid var(--border);
-  border-radius:999px;
-
-  background:rgba(255,255,255,.65);
-
-  box-shadow:
-    0 8px 25px rgba(70,50,130,.1),
-    inset 0 1px rgba(255,255,255,.8);
-
-  color:var(--muted);
-
-  font-size:9px;
-  font-weight:850;
-  letter-spacing:.13em;
-}
-
-/* LAYOUT */
-
-.main{
-  display:grid;
-  grid-template-columns:390px 1fr;
-  gap:24px;
-}
-
-/* PLAYER */
-
-.player{
-  position:sticky;
-  top:20px;
-
-  height:max-content;
-
-  padding:22px;
-
-  border:1px solid var(--border);
-  border-radius:30px;
-
-  background:var(--surface);
-
-  backdrop-filter:blur(25px);
-  -webkit-backdrop-filter:blur(25px);
-
-  box-shadow:var(--shadow);
-}
-
-.cover{
-  position:relative;
-
-  width:100%;
-  aspect-ratio:1;
-
-  overflow:hidden;
-
-  border-radius:22px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #8d7aff,
-      #ff8fbd
-    );
-
-  box-shadow:
-    0 18px 45px rgba(80,60,140,.22),
-    inset 0 1px rgba(255,255,255,.8);
-}
-
-.cover img{
-  width:100%;
-  height:100%;
-
-  object-fit:cover;
-
-  display:block;
-}
-
-.cover-fallback{
-  position:absolute;
-  inset:0;
-
-  display:none;
-
-  align-items:center;
-  justify-content:center;
-
-  color:white;
-
-  font-size:70px;
-  font-weight:950;
-
-  letter-spacing:.12em;
-}
-
-/* CURRENT */
-
-.current{
-  padding:22px 4px 8px;
-}
-
-.current-label{
-  margin-bottom:8px;
-
-  color:var(--muted);
-
-  font-size:9px;
-  font-weight:850;
-
-  letter-spacing:.18em;
-}
-
-.current-title{
-  margin:0;
-
-  font-size:26px;
-  line-height:1.05;
-
-  letter-spacing:-.045em;
-}
-
-.current-artist{
-  margin:8px 0 0;
-
-  color:var(--muted);
-
-  font-size:13px;
-}
-
-/* PROGRESS */
-
-.progress-area{
-  margin-top:17px;
-}
-
-.progress{
-  width:100%;
-  height:7px;
-
-  overflow:hidden;
-
-  border-radius:99px;
-
-  background:rgba(80,65,140,.13);
-
-  cursor:pointer;
-}
-
-.progress-fill{
-  width:0%;
-  height:100%;
-
-  border-radius:99px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--accent),
-      var(--accent2)
-    );
-}
-
-.times{
-  display:flex;
-  justify-content:space-between;
-
-  margin-top:7px;
-
-  color:var(--muted);
-
-  font-size:10px;
-
-  font-variant-numeric:tabular-nums;
-}
-
-/* CONTROLS */
-
-.controls{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-
-  gap:16px;
-
-  margin-top:15px;
-}
-
-.control{
-  width:45px;
-  height:45px;
-
-  border:0;
-  border-radius:15px;
-
-  background:rgba(255,255,255,.75);
-
-  color:var(--text);
-
-  font-size:17px;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 7px 20px rgba(70,55,130,.1),
-    inset 0 1px rgba(255,255,255,.9);
-
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease;
-}
-
-.control:active{
-  transform:scale(.94);
-}
-
-.play{
-  width:64px;
-  height:64px;
-
-  border:0;
-  border-radius:21px;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent),
-      var(--accent2)
-    );
-
-  color:white;
-
-  font-size:22px;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 14px 30px rgba(112,92,255,.32);
-
-  transition:transform .15s ease;
-}
-
-.play:active{
-  transform:scale(.94);
-}
-
-/* TRACKLIST */
-
-.tracklist{
-  padding:14px;
-
-  border:1px solid var(--border);
-  border-radius:30px;
-
-  background:var(--surface);
-
-  backdrop-filter:blur(25px);
-  -webkit-backdrop-filter:blur(25px);
-
-  box-shadow:var(--shadow);
-}
-
-.track-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  padding:10px 12px 15px;
-}
-
-.track-header h2{
-  margin:0;
-
-  font-size:13px;
-
-  letter-spacing:.15em;
-}
-
-.track-header span{
-  color:var(--muted);
-
-  font-size:10px;
-  font-weight:700;
-}
-
-.track{
-  width:100%;
-
-  display:grid;
-  grid-template-columns:40px 1fr 35px;
-
-  align-items:center;
-
-  gap:8px;
-
-  padding:17px 14px;
-
-  border:0;
-  border-radius:18px;
-
-  background:transparent;
-
-  color:var(--text);
-
-  text-align:left;
-
-  cursor:pointer;
-
-  transition:
-    background .18s ease,
-    transform .18s ease;
-}
-
-.track:hover{
-  background:rgba(255,255,255,.55);
-}
-
-.track:active{
-  transform:scale(.985);
-}
-
-.track.active{
-  background:var(--surface2);
-
-  box-shadow:
-    0 9px 25px rgba(70,50,130,.09),
-    inset 0 1px rgba(255,255,255,.95);
-}
-
-.number{
-  color:var(--muted);
-
-  font-size:12px;
-  font-weight:750;
-}
-
-.track.active .number{
-  color:var(--accent);
-}
-
-.info{
-  display:flex;
-  flex-direction:column;
-
-  gap:3px;
-}
-
-.info strong{
-  font-size:15px;
-  font-weight:750;
-
-  letter-spacing:-.015em;
-}
-
-.info small{
-  color:var(--muted);
-
-  font-size:10px;
-}
-
-.icon{
-  color:var(--muted);
-
-  text-align:center;
-
-  font-size:12px;
-}
-
-.track.active .icon{
-  color:var(--accent);
-}
-
-/* FULL ALBUM */
-
-.full-album{
-  margin-top:14px;
-
-  padding:15px;
-
-  border-radius:19px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(112,92,255,.09),
-      rgba(255,107,168,.09)
-    );
-
-  border:1px solid rgba(112,92,255,.08);
-}
-
-.full-album button{
-  width:100%;
-
-  padding:13px;
-
-  border:0;
-  border-radius:13px;
-
-  background:white;
-
-  color:var(--text);
-
-  font-size:12px;
-  font-weight:800;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 5px 15px rgba(70,50,130,.08);
-}
-
-/* FOOTER */
-
-footer{
-  margin-top:30px;
-
-  text-align:center;
-
-  color:var(--muted);
-
-  font-size:9px;
-
-  letter-spacing:.14em;
-}
-
-/* MOBILE */
-
-@media(max-width:760px){
-
-  .app{
-    padding:
-      17px
-      13px
-      45px;
-  }
-
-  header{
-    margin-bottom:18px;
-  }
-
-  .main{
-    grid-template-columns:1fr;
-    gap:16px;
-  }
-
-  .player{
-    position:relative;
-    top:0;
-
-    padding:17px;
-
-    border-radius:25px;
-  }
-
-  .cover{
-    border-radius:19px;
-  }
-
-  .current{
-    padding-top:18px;
-  }
-
-  .current-title{
-    font-size:23px;
-  }
-
-  .tracklist{
-    border-radius:25px;
-  }
-
-  .track{
-    padding:
-      15px
-      11px;
-  }
-
-  .info strong{
-    font-size:14px;
-  }
-
-}
-
-@media(min-width:761px){
-
-  .player{
-    max-height:
-      calc(100vh - 40px);
-  }
-
-}
-</style>
-</head>
-
-
-<body>
-
-<div class="app">
-
-<header>
-
-  <div class="brand">
-
-    <h1>SAMBLER</h1>
-
-    <p>ALBUM PREVIEW</p>
-
-  </div>
-
-  <div class="badge">
-    PRIVATE LISTENING
-  </div>
-
-</header>
-
-
-<main class="main">
-
-
-<!-- PLAYER -->
-
-<section class="player">
-
-  <div class="cover">
-
-    <img
-      src="assets/Capa%20de%20%C3%A1lbum%20Sambler_%20fantasia%20pixel%20retr%C3%B4.png"
-      alt="Capa do álbum Sambler"
-      onerror="
-        this.style.display='none';
-        document.querySelector('.cover-fallback').style.display='flex';
-      "
-    >
-
-    <div class="cover-fallback">
-      S
-    </div>
-
-  </div>
-
-
-  <div class="current">
-
-    <div class="current-label">
-      NOW PLAYING
-    </div>
-
-    <h2
-      class="current-title"
-      id="currentTitle"
-    >
-      Abandono
-    </h2>
-
-    <p class="current-artist">
-      Sambler
-    </p>
-
-  </div>
-
-
-  <div class="progress-area">
-
-    <div
-      class="progress"
-      id="progress"
-      title="Clique para avançar"
-    >
-
-      <div
-        class="progress-fill"
-        id="progressFill"
-      ></div>
-
-    </div>
-
-
-    <div class="times">
-
-      <span id="currentTime">
-        0:00
-      </span>
-
-      <span id="duration">
-        0:00
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <div class="controls">
-
-    <button
-      class="control"
-      id="prevBtn"
-      aria-label="Faixa anterior"
-    >
-      ⏮
-    </button>
-
-
-    <button
-      class="play"
-      id="playBtn"
-      aria-label="Reproduzir"
-    >
-      ▶
-    </button>
-
-
-    <button
-      class="control"
-      id="nextBtn"
-      aria-label="Próxima faixa"
-    >
-      ⏭
-    </button>
-
-  </div>
-
-
-  <audio id="audio" preload="metadata"></audio>
-
-</section>
-
-
-<!-- TRACKLIST -->
-
-<section class="tracklist">
-
-  <div class="track-header">
-
-    <h2>
-      TRACKLIST
-    </h2>
-
-    <span>
-      06 TRACKS
-    </span>
-
-  </div>
-
-
-  <button
-    class="track active"
-    data-index="0"
-  >
-
-    <span class="number">
-      01
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Abandono
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <button
-    class="track"
-    data-index="1"
-  >
-
-    <span class="number">
-      02
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Amores
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <button
-    class="track"
-    data-index="2"
-  >
-
-    <span class="number">
-      03
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Aliada com o Tempo
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <button
-    class="track"
-    data-index="3"
-  >
-
-    <span class="number">
-      04
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Hahahah
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <button
-    class="track"
-    data-index="4"
-  >
-
-    <span class="number">
-      05
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Pode Atirar
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <button
-    class="track"
-    data-index="5"
-  >
-
-    <span class="number">
-      06
-    </span>
-
-    <span class="info">
-
-      <strong>
-        Selvagem
-      </strong>
-
-      <small>
-        Sambler
-      </small>
-
-    </span>
-
-    <span class="icon">
-      ▶
-    </span>
-
-  </button>
-
-
-  <!-- MIXDOWN -->
-
-  <div class="full-album">
-
-    <button id="albumBtn">
-      ▶ &nbsp; OUVIR MIXDOWN DO ÁLBUM
-    </button>
-
-  </div>
-
-</section>
-
-</main>
-
-
-<footer>
-  SAMBLER — PRIVATE PREVIEW
-</footer>
-
-</div>
-
-
-<script>
-
-const tracks = [
-
-  {
-    title:"Abandono",
-    file:"audio/Sambler%20-%20Abandono.mp3"
-  },
-
-  {
-    title:"Amores",
-    file:"audio/Sambler%20-%20Amores.mp3"
-  },
-
-  {
-    title:"Aliada com o Tempo",
-    file:"audio/Sambler%20-%20Aliada%20com%20o%20tempo.mp3"
-  },
-
-  {
-    title:"Hahahah",
-    file:"audio/Sambler%20-%20Hahahah.mp3"
-  },
-
-  {
-    title:"Pode Atirar",
-    file:"audio/Sambler%20-%20Pode%20atirar.mp3"
-  },
-
-  {
-    title:"Selvagem",
-    file:"audio/Sambler%20-%20Selvagem.mp3"
-  }
-
-];
-
-
-const albumMix =
-  "audio/mixdown_Album_Sambler.mp3";
-
-
-const audio =
-  document.getElementById("audio");
-
-const playBtn =
-  document.getElementById("playBtn");
-
-const prevBtn =
-  document.getElementById("prevBtn");
-
-const nextBtn =
-  document.getElementById("nextBtn");
-
-const progress =
-  document.getElementById("progress");
-
-const progressFill =
-  document.getElementById("progressFill");
-
-const currentTime =
-  document.getElementById("currentTime");
-
-const duration =
-  document.getElementById("duration");
-
-const currentTitle =
-  document.getElementById("currentTitle");
-
-const albumBtn =
-  document.getElementById("albumBtn");
-
-const trackButtons =
-  document.querySelectorAll(".track");
-
-
-let currentTrack = 0;
-
-
-/* FORMAT TIME */
-
-function formatTime(seconds){
-
-  if(
-    !Number.isFinite(seconds)
-  ){
-    return "0:00";
-  }
-
-  const minutes =
-    Math.floor(seconds / 60);
-
-  const secs =
-    Math.floor(seconds % 60)
-      .toString()
-      .padStart(2,"0");
-
-  return `${minutes}:${secs}`;
-
-}
-
-
-/* LOAD TRACK */
-
-function loadTrack(index){
-
-  currentTrack = index;
-
-  audio.src =
-    tracks[index].file;
-
-  currentTitle.textContent =
-    tracks[index].title;
-
-
-  trackButtons.forEach(
-    button =>
-      button.classList.remove(
-        "active"
-      )
-  );
-
-
-  trackButtons[index]
-    .classList.add("active");
-
-
-  resetProgress();
-
-}
-
-
-/* RESET */
-
-function resetProgress(){
-
-  progressFill.style.width =
-    "0%";
-
-  currentTime.textContent =
-    "0:00";
-
-  duration.textContent =
-    "0:00";
-
-}
-
-
-/* PLAY */
-
-function play(){
-
-  audio.play()
-    .then(() => {
-
-      playBtn.textContent =
-        "❚❚";
-
-    })
-    .catch(() => {
-
-      console.log(
-        "Não foi possível reproduzir o áudio."
-      );
-
-    });
-
-}
-
-
-/* PAUSE */
-
-function pause(){
-
-  audio.pause();
-
-  playBtn.textContent =
-    "▶";
-
-}
-
-
-/* PLAY / PAUSE */
-
-playBtn.addEventListener(
-  "click",
-  () => {
-
-    if(audio.paused){
-
-      play();
-
-    }else{
-
-      pause();
-
-    }
-
-  }
-);
-
-
-/* TRACK SELECTION */
-
-trackButtons.forEach(
-  button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const index =
-          Number(
-            button.dataset.index
-          );
-
-        loadTrack(index);
-
-        play();
-
-      }
-    );
-
-  }
-);
-
-
-/* NEXT */
-
-function next(){
-
-  currentTrack++;
-
-  if(
-    currentTrack >=
-    tracks.length
-  ){
-
-    currentTrack = 0;
-
-  }
-
-  loadTrack(currentTrack);
-
-  play();
-
-}
-
-
-nextBtn.addEventListener(
-  "click",
-  next
-);
-
-
-/* PREVIOUS */
-
-function previous(){
-
-  currentTrack--;
-
-  if(currentTrack < 0){
-
-    currentTrack =
-      tracks.length - 1;
-
-  }
-
-  loadTrack(currentTrack);
-
-  play();
-
-}
-
-
-prevBtn.addEventListener(
-  "click",
-  previous
-);
-
-
-/* AUDIO TIME */
-
-audio.addEventListener(
-  "timeupdate",
-  () => {
-
-    if(
-      !Number.isFinite(
-        audio.duration
-      )
-    ){
-      return;
-    }
-
-
-    const percent =
-      (
-        audio.currentTime /
-        audio.duration
-      ) * 100;
-
-
-    progressFill.style.width =
-      `${percent}%`;
-
-
-    currentTime.textContent =
-      formatTime(
-        audio.currentTime
-      );
-
-  }
-);
-
-
-/* METADATA */
-
-audio.addEventListener(
-  "loadedmetadata",
-  () => {
-
-    duration.textContent =
-      formatTime(
-        audio.duration
-      );
-
-  }
-);
-
-
-/* PROGRESS CLICK */
-
-progress.addEventListener(
-  "click",
-  event => {
-
-    if(
-      !Number.isFinite(
-        audio.duration
-      )
-    ){
-      return;
-    }
-
-
-    const rect =
-      progress.getBoundingClientRect();
-
-
-    const percent =
-      (
-        event.clientX -
-        rect.left
-      ) / rect.width;
-
-
-    audio.currentTime =
-      percent *
-      audio.duration;
-
-  }
-);
-
-
-/* AUTO NEXT */
-
-audio.addEventListener(
-  "ended",
-  () => {
-
-    next();
-
-  }
-);
-
-
-/* FULL MIXDOWN */
-
-albumBtn.addEventListener(
-  "click",
-  () => {
-
-    audio.src =
-      albumMix;
-
-    currentTitle.textContent =
-      "Mixdown — Álbum Sambler";
-
-
-    trackButtons.forEach(
-      button =>
-        button.classList.remove(
-          "active"
-        )
-    );
-
-
-    play();
-
-  }
-);
-
-
-/* FIRST TRACK */
-
-loadTrack(0);
-
-</script>
-
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width,initial-scale=1,viewport-fit=cover"
+		/>
+		<meta name="theme-color" content="#07070d" />
+		<meta
+			name="description"
+			content="SAMBLER — Tudo começa pelo abandono. Site oficial."
+		/>
+		<title>SAMBLER — Tudo começa pelo abandono</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<style>
+			:root{
+			  --black:#030308; --black2:#070711; --ink:#f7f3ff; --muted:#a7a1b4;
+			  --pink:#ff00b8; --hot:#ff2bd6; --cyan:#00eaff; --violet:#7b35ff;
+			  --acid:#d7ff3f; --line:rgba(255,0,184,.28); --line-cyan:rgba(0,234,255,.28);
+			  --glass:rgba(7,7,17,.70); --shadow:0 30px 100px rgba(0,0,0,.72);
+			}
+			*{box-sizing:border-box;margin:0;padding:0}
+			html{scroll-behavior:smooth;background:var(--black)}
+			body{
+			  min-height:100vh;color:var(--ink);overflow-x:hidden;
+			  font-family:'Space Grotesk',sans-serif;
+			  background:
+			    radial-gradient(circle at 12% 10%,rgba(255,0,184,.14),transparent 22%),
+			    radial-gradient(circle at 87% 18%,rgba(0,234,255,.11),transparent 20%),
+			    radial-gradient(circle at 50% 55%,rgba(123,53,255,.10),transparent 32%),
+			    linear-gradient(125deg,#020207,#080711 46%,#030309);
+			}
+			body:before{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.13;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(255,255,255,.055) 4px)}
+			body:after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(0,234,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,184,.035) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(to bottom,#000,transparent 90%)}
+			a{color:inherit}button,input{font:inherit}button{cursor:pointer}
+			.wrap{min-height:100vh;display:flex;flex-direction:column;position:relative}
+
+			/* atmospheric effects */
+			.fx{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+			.fx .flash{position:absolute;width:42vw;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),white,var(--pink),transparent);filter:blur(.3px);opacity:0;transform:rotate(-12deg);animation:flash 7s infinite}
+			.fx .flash:nth-child(1){top:22%;left:-10%;animation-delay:1s}.fx .flash:nth-child(2){top:63%;left:55%;animation-delay:3.8s;transform:rotate(8deg)}.fx .flash:nth-child(3){top:38%;left:18%;animation-delay:5.4s;transform:rotate(-5deg)}
+			@keyframes flash{0%,88%,100%{opacity:0;transform:translateX(-18vw) rotate(-12deg)}90%{opacity:.85}92%{opacity:.15}94%{opacity:.7;transform:translateX(125vw) rotate(-12deg)}}
+			.particles{position:absolute;inset:0}.particle{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:particleFloat var(--d) linear infinite;opacity:.7}
+			.particle.p{background:var(--pink);box-shadow:0 0 8px var(--pink)}
+			@keyframes particleFloat{from{transform:translate3d(0,30px,0);opacity:0}15%{opacity:.8}80%{opacity:.55}to{transform:translate3d(var(--x),-110px,0);opacity:0}}
+
+			header{position:sticky;top:0;z-index:50;min-height:74px;padding:9px clamp(15px,4vw,55px);display:flex;align-items:center;justify-content:space-between;gap:24px;background:rgba(2,2,7,.82);border-bottom:1px solid rgba(0,234,255,.22);backdrop-filter:blur(20px)}
+			header:after{content:"";position:absolute;left:0;bottom:-1px;width:24%;height:1px;background:linear-gradient(90deg,var(--pink),var(--cyan),transparent);box-shadow:0 0 15px var(--pink)}
+			.brand{display:flex;align-items:center;gap:13px;text-decoration:none;min-width:190px}.brand-mark{width:100px;height:auto;display:block;filter:drop-shadow(0 0 8px rgba(255,0,184,.65)) drop-shadow(8px 0 0 rgba(0,234,255,.12))}.brand-label{font-family:'Oxanium',sans-serif;font-size:8px;letter-spacing:2.8px;color:#797487;text-transform:uppercase}
+			nav{display:flex;align-items:center;justify-content:flex-end;gap:2px;flex-wrap:wrap}nav a{position:relative;text-decoration:none;text-transform:uppercase;font-family:'Oxanium',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8d8899;padding:12px 13px;transition:.2s}nav a:before{content:"";position:absolute;left:8px;right:8px;bottom:5px;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan));transform:scaleX(0);transform-origin:left;transition:.22s;box-shadow:0 0 9px rgba(255,0,184,.7)}nav a:hover,nav a.active{color:#fff;text-shadow:0 0 10px rgba(255,255,255,.25)}nav a:hover:before,nav a.active:before{transform:scaleX(1)}
+
+			main{width:min(1220px,100%);margin:0 auto;padding:18px clamp(15px,3vw,32px) 90px;flex:1;position:relative;z-index:2}.page{display:none;animation:pageIn .38s ease both}.page.active{display:block}@keyframes pageIn{from{opacity:0;transform:translateY(14px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+
+			.hero{position:relative;min-height:calc(100vh - 120px);display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,.95fr);align-items:center;gap:30px;padding:35px 0 75px;overflow:hidden}.hero:before{content:"";position:absolute;inset:5% -10% 0;background:radial-gradient(ellipse at 38% 55%,rgba(255,0,184,.15),transparent 38%),radial-gradient(ellipse at 78% 48%,rgba(0,234,255,.09),transparent 32%);pointer-events:none}.hero-copy{position:relative;z-index:4;padding-left:clamp(0px,2vw,25px)}
+			.kicker{display:flex;align-items:center;gap:11px;margin-bottom:17px;color:var(--cyan);font-family:'Oxanium',sans-serif;font-size:10px;letter-spacing:3.5px;text-transform:uppercase}.kicker:before{content:"//";color:var(--pink);font-weight:900}.kicker:after{content:"";height:1px;width:42px;background:linear-gradient(90deg,var(--pink),var(--cyan));box-shadow:0 0 12px var(--pink)}
+			.tagline{font-family:'Oxanium',sans-serif;font-size:11px;letter-spacing:3px;color:var(--pink);text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 13px rgba(255,0,184,.55)}
+			.hero-copy h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,9vw,126px);font-weight:400;line-height:.78;letter-spacing:-1px;text-transform:uppercase;text-shadow:0 0 20px rgba(255,0,184,.20)}.hero-copy h1 span{display:block;color:transparent;-webkit-text-stroke:1px rgba(0,234,255,.72);text-shadow:5px 0 0 rgba(255,0,184,.13)}
+			.hero-copy .lead{max-width:610px;margin:27px 0 25px;color:#bdb7ca;font-size:17px;line-height:1.55}.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
+			.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;text-decoration:none;text-transform:uppercase;font-family:'Oxanium',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.7px;border:1px solid rgba(255,255,255,.18);transition:.22s;position:relative;overflow:hidden;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}.btn:after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.3),transparent 70%);transform:translateX(-110%);transition:.4s}.btn:hover:after{transform:translateX(110%)}.btn-primary{background:linear-gradient(105deg,var(--pink),var(--violet) 58%,var(--cyan));color:#fff;border-color:transparent;box-shadow:0 0 25px rgba(255,0,184,.28)}.btn-ghost{background:rgba(255,255,255,.025);color:#e5e0eb}.btn:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(0,0,0,.4),0 0 26px rgba(255,0,184,.2)}
+			.meta-strip{display:flex;flex-wrap:wrap;gap:7px;margin-top:27px}.meta{border-left:2px solid var(--pink);padding:5px 13px;background:linear-gradient(90deg,rgba(255,0,184,.05),transparent)}.meta small{display:block;color:#706a7d;font-family:'Oxanium',sans-serif;font-size:7px;letter-spacing:1.6px;text-transform:uppercase}.meta strong{display:block;margin-top:3px;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.7px}
+
+			.hero-art{position:relative;display:flex;justify-content:center;align-items:center;min-height:560px}.hero-art:before{content:"";position:absolute;width:min(570px,90vw);aspect-ratio:1;border:1px solid rgba(0,234,255,.17);border-radius:50%;box-shadow:0 0 120px rgba(255,0,184,.13),inset 0 0 90px rgba(123,53,255,.08)}.hero-art:after{content:"";position:absolute;width:100%;height:30%;bottom:8%;background:linear-gradient(90deg,transparent,rgba(255,0,184,.17),rgba(0,234,255,.12),transparent);filter:blur(25px);transform:skewY(-7deg)}
+			.hero-mark{position:relative;width:min(580px,98vw);height:auto;z-index:5;filter:drop-shadow(0 0 16px rgba(255,0,184,.85)) drop-shadow(0 0 42px rgba(123,53,255,.34));animation:logoFloat 5s ease-in-out infinite,logoFlicker 8s infinite}.hero-mark:hover{filter:drop-shadow(0 0 28px rgba(255,0,184,1)) drop-shadow(0 0 58px rgba(0,234,255,.35))}.logo-ring{position:absolute;width:min(540px,86vw);aspect-ratio:1;border:1px dashed rgba(255,0,184,.28);border-radius:50%;animation:spin 26s linear infinite}.logo-ring:before,.logo-ring:after{content:"";position:absolute;inset:8%;border:1px solid rgba(0,234,255,.10);border-radius:50%}.logo-ring:after{inset:19%;border-style:dotted;border-color:rgba(255,0,184,.18)}
+			@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-.3deg)}50%{transform:translateY(-10px) rotate(.3deg)}}@keyframes logoFlicker{0%,92%,100%{opacity:1}93%{opacity:.72;filter:drop-shadow(-5px 0 0 rgba(0,234,255,.4)) drop-shadow(6px 0 0 rgba(255,0,184,.4))}94%{opacity:1}}
+			.corner{position:absolute;width:65px;height:65px;opacity:.75;z-index:6}.corner.tl{left:2%;top:5%;border-left:1px solid var(--cyan);border-top:1px solid var(--cyan)}.corner.br{right:2%;bottom:5%;border-right:1px solid var(--pink);border-bottom:1px solid var(--pink)}
+			.hud{position:absolute;right:-2%;top:9%;display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:7}.hud span{font-family:'Oxanium',sans-serif;font-size:7px;letter-spacing:2.2px;color:#6d6879;border-right:2px solid var(--cyan);padding-right:7px}.hud span:nth-child(2){color:var(--pink);border-color:var(--pink)}
+			.glitch-label{position:absolute;bottom:7%;left:0;font-family:'Oxanium',sans-serif;font-size:8px;letter-spacing:2px;color:#6d6879;transform:rotate(-90deg);transform-origin:left bottom}.glitch-label b{color:var(--pink)}
+
+			/* diagonal neon shards */
+			.shards{position:absolute;inset:0;pointer-events:none;z-index:3}.shard{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent);box-shadow:0 0 10px rgba(255,0,184,.55);opacity:.6;transform:rotate(-18deg)}.shard.s1{width:190px;left:1%;top:19%}.shard.s2{width:130px;right:4%;top:30%;transform:rotate(24deg)}.shard.s3{width:220px;left:38%;bottom:12%;transform:rotate(-8deg)}.shard.s4{width:95px;right:18%;bottom:25%;transform:rotate(38deg)}
+
+			.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin:28px 0 20px}.section-head h2{font-family:'Bebas Neue',sans-serif;font-size:68px;font-weight:400;line-height:.85;letter-spacing:.5px;text-transform:uppercase}.section-head p{color:var(--muted);max-width:560px;text-align:right;line-height:1.5;font-size:15px}
+			.panel{position:relative;background:linear-gradient(145deg,rgba(14,12,24,.82),rgba(4,5,10,.92));border:1px solid var(--line);box-shadow:var(--shadow);padding:clamp(21px,4vw,38px);overflow:hidden;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}.panel:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(125deg,rgba(255,0,184,.08),transparent 35%,rgba(0,234,255,.04) 72%,transparent)}.panel:after{content:"";position:absolute;top:0;left:0;width:110px;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),transparent);box-shadow:0 0 16px var(--pink)}
+
+			.music-empty{min-height:58vh;display:flex;align-items:center;justify-content:center;text-align:center}.music-empty-inner{max-width:700px;position:relative}.music-symbol{font-family:'Bebas Neue',sans-serif;font-size:82px;line-height:.8;color:var(--pink);text-shadow:0 0 28px rgba(255,0,184,.6),7px 0 0 rgba(0,234,255,.16);margin-bottom:15px}.music-empty h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(58px,8vw,94px);font-weight:400;line-height:.82}.music-empty p{margin:18px auto 27px;color:var(--muted);font-size:17px;line-height:1.6}.instagram-card{display:inline-flex;align-items:center;gap:12px;padding:15px 21px;border:1px solid rgba(255,0,184,.48);background:linear-gradient(90deg,rgba(255,0,184,.08),rgba(0,234,255,.04));text-decoration:none;text-transform:uppercase;font-family:'Oxanium',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.8px;box-shadow:0 0 30px rgba(255,0,184,.10);transition:.2s}.instagram-card:hover{border-color:var(--cyan);box-shadow:0 0 35px rgba(0,234,255,.22);transform:translateY(-2px)}
+
+			.bio-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.65fr);gap:18px}.bio-main h2{font-family:'Bebas Neue',sans-serif;font-size:74px;font-weight:400;line-height:.82;margin-bottom:24px;color:#fff}.bio-main p{color:#c0bacb;font-size:17px;line-height:1.75;margin-bottom:20px}.bio-main p:first-of-type:first-letter{font-family:'Bebas Neue',sans-serif;font-size:76px;line-height:.6;float:left;padding:11px 10px 0 0;color:var(--pink);text-shadow:0 0 18px rgba(255,0,184,.45)}.bio-main strong{color:#fff;text-shadow:0 0 8px rgba(255,0,184,.2)}.signal-list{display:grid;gap:10px}.signal{padding:15px 16px;border-left:2px solid var(--cyan);border-top:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.018)}.signal b{display:block;font-family:'Oxanium',sans-serif;color:var(--pink);font-size:9px;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:5px}.signal span{color:#9d97a8;font-size:13px;line-height:1.45}
+
+			.news-list{display:grid;gap:0}.news{display:grid;grid-template-columns:160px 1fr;gap:25px;padding:23px 0;border-bottom:1px solid rgba(0,234,255,.13)}.news:last-child{border-bottom:0}.news-date{font-family:'Oxanium',sans-serif;color:var(--pink);font-size:9px;letter-spacing:2px}.news h3{font-family:'Bebas Neue',sans-serif;font-size:34px;font-weight:400;letter-spacing:.7px}.news p{margin-top:6px;color:#9993a5;font-size:14px;line-height:1.5}
+
+			.members-shell{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.members-intro h2{font-family:'Bebas Neue',sans-serif;font-size:86px;line-height:.76;font-weight:400;text-transform:uppercase;margin:16px 0 22px}.members-intro>p{max-width:540px;color:#aaa4b5;font-size:16px;line-height:1.6}.eyebrow{font-family:'Oxanium',sans-serif;font-size:9px;letter-spacing:2.3px;color:var(--pink);text-transform:uppercase}.exclusive{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:25px}.exclusive div{padding:11px;border:1px solid rgba(255,0,184,.16);background:rgba(255,0,184,.035);font-family:'Oxanium',sans-serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#aaa4b5}.login-panel h3{font-family:'Bebas Neue',sans-serif;font-size:46px;font-weight:400}.login-panel .sub{color:#817b8c;font-size:13px;margin:5px 0 22px}.field{margin-bottom:14px}.field label{display:block;font-family:'Oxanium',sans-serif;font-size:8px;letter-spacing:1.7px;color:#777184;text-transform:uppercase;margin-bottom:6px}.field input{width:100%;height:46px;background:rgba(0,0,0,.32);border:1px solid rgba(0,234,255,.18);color:#fff;padding:0 13px;outline:none;transition:.2s}.field input:focus{border-color:var(--pink);box-shadow:0 0 0 2px rgba(255,0,184,.10),0 0 18px rgba(255,0,184,.12)}.login-panel .btn{width:100%;margin-top:5px}.login-msg{min-height:20px;color:var(--pink);font-size:11px;margin-top:10px}.access-buy{margin-top:27px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:7px;color:#706b7b;font-size:11px}.access-buy a{color:var(--cyan);text-decoration:none;font-family:'Oxanium',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase}.access-buy a:hover{color:#fff}
+			.private-area{display:none}.private-area.visible{display:block}.private-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.private-card{min-height:150px;padding:20px;border:1px solid rgba(255,0,184,.22);background:linear-gradient(145deg,rgba(255,0,184,.05),rgba(0,234,255,.025));transition:.2s}.private-card:hover{transform:translateY(-3px);border-color:rgba(0,234,255,.42)}.private-card .ico{font-size:23px;color:var(--pink)}.private-card h4{font-family:'Oxanium',sans-serif;font-size:9px;letter-spacing:1.4px;text-transform:uppercase;margin:12px 0 6px}.private-card p{font-size:13px;color:#817b8e;line-height:1.4}.logout{margin-top:18px;background:none;border:0;color:#777284;text-decoration:underline;font-size:11px}
+			footer{padding:26px 18px 35px;text-align:center;border-top:1px solid rgba(0,234,255,.13);color:#625d6d;font-family:'Oxanium',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:2}footer strong{color:#9f99aa}
+
+			/* v1.1 Glitch & Socials Addons */
+			.glitch-date{position:relative;min-height:12px;width:118px;color:transparent}
+			.glitch-date:before{content:"08.10.26";position:absolute;left:0;color:var(--cyan);font-family:'Oxanium',sans-serif;font-size:10px;letter-spacing:3px;opacity:.7;text-shadow:4px 0 var(--pink),-3px 0 rgba(0,234,255,.55);animation:glitchDate 3.8s steps(1,end) infinite}
+			.glitch-date:after{content:"// 08_10_26 //";position:absolute;left:4px;top:2px;color:var(--pink);font-family:'Oxanium',sans-serif;font-size:6px;letter-spacing:2px;opacity:.25;mix-blend-mode:screen}
+			@keyframes glitchDate{0%,89%,100%{clip-path:inset(0 0 0 0);transform:none}90%{clip-path:inset(35% 0 45% 0);transform:translateX(5px)}91%{clip-path:inset(60% 0 15% 0);transform:translateX(-4px)}92%{clip-path:inset(0 0 0 0);transform:none}}
+			.hud{gap:6px}
+			.hud i{display:block;width:88px;height:4px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink));opacity:.55;transform:skewX(-28deg);box-shadow:0 0 10px rgba(0,234,255,.3);animation:hudGlitch 2.7s steps(1,end) infinite}
+			.hud i:nth-child(2){width:53px;background:linear-gradient(90deg,var(--pink),transparent);animation-delay:.7s}.hud i:nth-child(3){width:108px;opacity:.3;animation-delay:1.4s}
+			@keyframes hudGlitch{0%,78%,100%{transform:skewX(-28deg);opacity:.35}80%{transform:translateX(8px) skewX(-28deg);opacity:.9}82%{transform:translateX(-5px) skewX(-28deg);opacity:.15}84%{transform:skewX(-28deg);opacity:.5}}
+			.glitch-label{width:72px;height:86px;display:flex;flex-direction:column;gap:6px;transform:rotate(-90deg);opacity:.55}
+			.glitch-label b{font-size:8px}.glitch-label span{height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),transparent);display:block}.glitch-label span:nth-child(2){width:45px}.glitch-label span:nth-child(3){width:27px}
+			.hero-social{display:flex;align-items:center;gap:9px;margin-top:18px}
+			.hero-social a{width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(0,234,255,.2);background:rgba(3,3,8,.45);color:#918a9c;text-decoration:none;transition:.2s;clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)}
+			.hero-social a:hover{color:#fff;border-color:var(--pink);box-shadow:0 0 18px rgba(255,0,184,.25);transform:translateY(-2px)}
+			.hero-social svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+			.venue-link{display:block;color:inherit;text-decoration:none}.venue-link:hover strong{color:var(--cyan)}.venue-link small{display:block;margin-top:3px;color:#625d6d;font-family:'Oxanium',sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase}
+
+			@media(max-width:900px){header{align-items:flex-start;flex-direction:column;padding:11px 15px}.brand{min-width:0}nav{width:100%;overflow:auto;flex-wrap:nowrap;justify-content:flex-start}nav a{white-space:nowrap;padding:9px 10px}.hero{grid-template-columns:1fr;min-height:auto;padding-top:22px}.hero-copy{order:2;text-align:center}.hero-copy .lead{margin-left:auto;margin-right:auto}.kicker{justify-content:center}.cta-row,.meta-strip{justify-content:center}.hero-art{order:1;min-height:420px}.hero-mark{width:min(560px,96vw)}.hud{right:0}.bio-grid,.members-shell{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.section-head p{text-align:left}.private-grid{grid-template-columns:1fr 1fr}}
+			@media(max-width:580px){main{padding-top:5px}.hero{padding-bottom:45px}.hero-art{min-height:315px}.hero-copy h1{font-size:70px}.hero-copy .lead{font-size:15px}.meta{flex:1;min-width:135px}.news{grid-template-columns:1fr;gap:7px}.exclusive,.private-grid{grid-template-columns:1fr}.panel{padding:21px 17px}.section-head h2{font-size:58px}.members-intro h2{font-size:70px}.bio-main h2{font-size:62px}.brand-mark{width:88px}.brand-label{display:none}}
+			@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+		</style>
+	</head>
+
+	<body>
+		<div class="fx" aria-hidden="true">
+			<div class="particles" id="particles"></div>
+			<span class="flash"></span><span class="flash"></span>
+			<span class="flash"></span>
+		</div>
+		<div class="wrap">
+			<header>
+				<a
+					href="#"
+					class="brand"
+					data-page-link="home"
+					aria-label="SAMBLER — Home"
+				>
+					<svg
+						class="brand-mark"
+						viewBox="0 0 1024 765"
+						version="1.1"
+						xmlns="http://www.w3.org/2000/svg"
+						xmlns:xlink="http://www.w3.org/1999/xlink"
+						xml:space="preserve"
+						xmlns:affinity="https://www.affinity.studio/"
+						style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"
+					>
+						<defs>
+							<linearGradient
+								id="heroLogoGradient"
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="1"
+							>
+								<stop offset="0" stop-color="#ff2fd6" />
+								<stop offset="0.7" stop-color="#e600b8" />
+								<stop offset="1" stop-color="#b800a0" />
+							</linearGradient>
+						</defs>
+						<g
+							transform="matrix(0.891501,0,0,0.891501,75.401957,136.741152)"
+						>
+							<path
+								d="M271.932,348.987C269.733,355.185 269.271,363.144 268.293,356.577C263.913,327.162 273.552,267.317 269.465,266.654C267.067,266.265 244.527,270.763 236.902,280.819C217.568,306.316 220.487,308.205 189.011,349.125C157.877,389.6 151.024,400.466 154.571,391.515C160.971,375.366 191.215,300.134 185.519,297.467C170.558,290.46 112.544,347.242 88.853,366.92C85.113,370.026 58.886,391.812 39.45,402.315C32.286,406.186 56.346,377.063 43.383,383.246C28.916,390.147 2.661,409.453 2.594,404.486C2.375,388.324 11.126,392.291 20.005,376.248C22.204,372.274 15.182,372.395 17.778,368.7C30.967,349.932 149.803,241.364 148.184,238.717C147.275,237.23 41.156,250.175 40.977,232.472C40.891,223.882 41.982,224.054 41.742,215.489C41.344,201.294 117.218,141.424 167.781,100.854C171.696,97.713 232.78,50.198 238.518,49.624C240.267,49.449 278.279,78.363 272.278,91.388C265.892,105.246 239.835,110.311 227.241,158.432C224.493,168.933 225.851,171.083 222.492,170.537C217.88,169.788 214.487,156.349 197.876,169.943C190.226,176.204 189.396,175.37 189.212,174.605C186.286,162.434 212.045,114.37 209.596,114.16C207.408,113.973 207.726,114.837 187.848,130.926C107.845,195.683 102.003,203.417 110.494,203.677C133.259,204.372 213.434,186.855 207.703,212.548C200.472,244.965 117.857,311.459 151.781,287.964C197.956,255.983 204.35,261.118 246.61,193.569C305.081,100.11 326.282,76.889 327.125,85.568C329.798,113.096 330.373,113.065 330.095,115.451C327.181,140.498 302.127,220.588 313.493,220.316C323.583,220.075 325.742,211.389 347.373,131.463C347.431,131.249 351.043,113.232 355.578,116.378C357.157,117.474 364.403,129.127 372.268,121.255C377.468,116.05 378.24,116.992 378.413,117.54C381.317,126.779 385.212,197.003 390.153,189.169C418.037,144.957 416.461,144.121 460.759,76.669C477.815,50.699 478.095,50.947 486.625,34.598C496.976,14.762 469.794,86.087 480.225,77.097C485.626,72.442 486.087,69.994 487.475,72.51C488.69,74.712 463.553,117.144 477.469,111.414C502.306,101.188 502.988,98.091 510.878,86.817C513.501,83.069 517.584,89.706 517.912,90.239C527.34,105.562 571.945,76.522 579.425,105.518C586.625,133.43 518.679,168.183 531.528,168.204C546.189,168.227 555.692,160.992 574.878,176.081C581.412,181.22 583.315,164.662 613.75,85.597C626.419,52.684 642.731,29.849 660.133,5.058C663.222,0.656 661.698,10.073 661.625,10.52C652.46,67.129 646.08,88.789 595.525,230.509C580.825,271.718 578.318,270.567 575.777,275.639C572.678,281.822 569.411,304.17 585.273,295.093C607.711,282.251 607.699,282.462 630.297,270.125C634.557,267.799 636.144,268.336 635.748,263.483C635.711,263.025 652.936,246.906 666.68,241.959C687.809,234.353 731.736,222.757 715.172,235.066C704.756,242.805 700.581,243.582 701.25,249.499C701.921,255.426 675.31,253.235 620.188,295.098C603.064,308.103 578.116,302.516 561.647,324.613C553.663,335.326 555,339.012 548.546,337.31C543.671,336.023 540.721,328.75 529.413,332.18C493.871,342.96 491.554,340.542 491.865,337.523C492.783,328.609 525.353,313.433 510.526,312.201C502.338,311.521 502.527,310.261 502.877,309.721C505.27,306.023 550.078,284.868 549.792,276.507C548.603,241.808 577.473,204.351 567.42,207.313C566.059,207.713 486.69,301.262 475.572,303.78C448.425,309.93 443.86,335.352 425.439,338.053C412.334,339.974 409.229,339.389 401.975,362.651C397.345,377.501 344.429,547.21 341.482,547.439C339.25,547.613 340.914,545.95 349.196,494.447C363.25,407.046 368.255,408.304 372.054,396.359C376.789,381.475 365.753,370.382 371.289,355.423C382.334,325.576 375.708,324.006 384.876,293.602C392.702,267.649 426.744,169.981 414.654,191.603C387.841,239.552 372.451,275.857 366.305,262.588C356.782,242.03 359.763,195.777 355.863,207.685C330.663,284.621 317.593,381.283 311.138,300.531C308.307,265.115 309.832,265.063 315.182,250.386C320,237.168 307.502,242.633 304.408,250.462C300.786,259.629 300.725,259.783 287.288,372.475C283.738,402.251 283.502,415.772 281.878,405.395C273.257,350.305 273.971,348.988 271.932,348.987ZM474.444,136.904C484.967,140.279 481.849,144.051 477.042,157.342C469.368,178.559 466.523,176.762 458.99,183.953C455.219,187.552 464.554,190.937 462.068,200.383C453.345,233.524 435.45,262.544 433.423,292.495C432.401,307.595 410.273,324.457 411.869,317.551C415.975,299.782 460.059,139.473 465.755,136.969C467.573,136.17 467.605,136.613 474.444,136.904ZM517.566,197.93C526.109,196.52 525.979,196.43 534.548,194.922C539.758,194.005 534.1,200.888 533.134,202.252C524.074,215.05 474.91,260.872 468.371,266.219C465.058,268.929 465.903,263.488 485.897,215.669C491.758,201.651 500.689,201.611 517.566,197.93ZM261.621,237.925C256.158,238.459 251.724,241.283 254.207,236.385C260.05,224.862 271.005,207.774 282.464,185.465C286.013,178.556 282.388,199.104 282.344,199.484C282.101,201.577 280.1,218.805 278.885,225.588C277.043,235.874 274.438,234.585 264.501,237.509C263.396,229.446 261.654,237.694 261.621,237.925ZM539.565,115.901C540.547,115.853 541.514,115.616 542.496,115.568C553.315,115.047 503.534,162.351 506.668,151.534C517.499,114.15 530.198,118.066 539.565,115.901ZM261.621,237.925C261.654,237.694 263.396,229.446 264.501,237.509C263.541,237.647 262.581,237.786 261.621,237.925Z"
+								style="fill-opacity:0.99;"
+							/>
+							<path
+								d="M870.493,22.038C887.768,21.772 917.209,20.058 930.159,32.851C951.452,53.884 946.26,57.258 944.299,59.31C899.337,106.33 825.347,144.525 823.323,152.447C821.95,157.819 942.202,281.73 943.662,287.45C944.662,291.366 931.28,284.075 930.471,284.078C927.093,284.09 929.803,286.517 953.918,319.191C963.329,331.941 983.728,358.178 974.566,351.383C948.983,332.411 875.808,281.932 867.166,275.971C855.647,268.025 871.522,272.314 873.499,272.53C881.946,273.454 872.255,267.978 802.004,193.99C793.277,184.798 788.061,176.976 784.394,185.452C772.039,214.012 775.641,215.587 715.813,332.659C703.67,356.421 693.701,378.06 698.635,359.532C748.253,173.235 758.071,170.181 746.186,158.836C727.304,140.811 751.939,143.987 763.157,131.174C767.671,126.018 783.471,70.531 783.573,69.503C784.264,62.553 741.355,65.55 739.866,64.054C738.257,62.438 740.299,62.538 747.196,58.027C758.087,50.903 718.862,49.197 719.363,45.437C719.551,44.021 835.25,22.649 870.493,22.038ZM862.507,57.963C863.94,57.959 878.907,57.917 880.403,58.676C885.842,61.438 871.369,71.392 870.257,72.157C814.758,110.327 815.386,111.074 810.404,114.138C808.326,115.417 808.825,112.733 817.177,84.397C824.88,58.261 830.889,60.713 862.507,57.963Z"
+								style="fill-opacity:0.99;"
+							/>
+							<path
+								d="M720.472,130.044C733.391,129.943 714.574,138.409 716.197,142.63C718.573,148.811 703.338,151.821 675.497,162.494C670.253,164.505 661.916,186.226 659.207,198.443C656.879,208.944 716.098,179.601 731.199,184.981C742.145,188.88 621.931,253.164 614.303,257.124C600.84,264.113 619.211,246.482 615.748,230.433C614.004,222.349 617.275,223.157 620.39,220.372C623.426,217.657 629.601,212.136 640.097,173.429C641.816,167.09 620.215,161.658 637.658,152.798C649.655,146.704 650.213,146.266 660.109,121.345C664.68,109.833 648.35,108.356 652.965,99.78C659.452,87.726 732.739,76.586 738.539,75.956C757.692,73.873 773.476,80.889 762.369,86.236C713.439,109.79 691.799,105.871 685.871,129.593C684.055,136.858 693.134,134.087 720.472,130.044Z"
+								style="fill-opacity:0.99;"
+							/>
+						</g>
+					</svg>
+					<span class="brand-label">32U Records Apresenta</span>
+				</a>
+				<nav id="mainNav" aria-label="Navegação principal">
+					<a href="#" data-page="home" class="active">Home</a>
+					<a href="#" data-page="musica">Música</a>
+					<a href="#" data-page="bio">Bio</a>
+					<a href="#" data-page="news">News</a>
+					<a href="#" data-page="membros">Membros</a>
+				</nav>
+			</header>
+
+			<main>
+				<section class="page active" id="page-home">
+					<div class="hero">
+						<div class="shards" aria-hidden="true">
+							<span class="shard s1"></span>
+							<span class="shard s2"></span>
+							<span class="shard s3"></span>
+							<span class="shard s4"></span>
+						</div>
+						<div class="hero-copy">
+							<div class="kicker glitch-date" aria-label="08.10.2026"></div>
+							<div class="tagline">Lançamento do EP:</div>
+							<h1>
+								Tudo começa<br /><span>pelo abandono... </span>
+							</h1>
+							<p class="lead">
+								É SOBRE O QUE TERMINA. O QUE LIBERTA. O QUE
+								PERMANECE. E TAMBÉM O QUE NASCE.
+							</p>
+							<div class="cta-row">
+								<a
+									class="btn btn-primary"
+									href="#"
+									id="presaveBtn"
+									>✦ Pré-save</a
+								>
+								<a
+									class="btn btn-ghost"
+									href="#"
+									data-page-link="membros"
+									>Apoie a artista</a
+								>
+							</div>
+							<div class="meta-strip">
+								<div class="meta">
+									<small>lançamento / show</small
+									><strong>08.10.2026 — 20H</strong>
+								</div>
+								<div class="meta">
+									<small> Santa Maria</small
+									><a class="venue-link" href="https://www.google.com/maps/search/?api=1&query=Astrogildo+de+Azevedo+91%2C+Santa+Maria%2C+RS" target="_blank" rel="noopener"><strong>TAVERNA BAR</strong><small>Astrogildo de Azevedo, 91 · Santa Maria / RS</small></a>
+								</div>
+							</div>
+							<div class="hero-social" aria-label="Links oficiais">
+								<a href="https://www.instagram.com/brilhecomosol" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.7" r="1"/></svg></a>
+								<a href="https://open.spotify.com/artist/04N14q2hERc5qtV2l3RbUZ" target="_blank" rel="noopener" aria-label="Spotify" title="Spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M7 9.5c3.5-1 7.1-.7 10 .5M7.5 12.2c3-.7 6-.4 8.6.6M8.5 14.8c2.4-.5 4.8-.2 6.8.5"/></svg></a>
+								<a href="https://privacy.com.br/@SamblerOficial" target="_blank" rel="noopener" aria-label="Apoie a artista" title="Apoie a artista"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10.1C5 6.9 6.8 5 9.3 5c1.4 0 2.4.7 2.7 1.8C12.4 5.7 13.4 5 14.7 5 17.2 5 19 6.9 19 9.9 19 15.6 12 20 12 20Z"/></svg></a>
+								<a href="https://www.youtube.com/@sambleroficial" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="m10 9 5 3-5 3z"/></svg></a>
+							</div>
+						</div>
+
+						<div class="hero-art">
+							<div class="logo-ring"></div>
+							<div class="corner tl"></div>
+							<div class="corner br"></div>
+							<div class="hud" aria-hidden="true"><i></i><i></i><i></i></div>
+							<div class="glitch-label" aria-hidden="true"><b>SYS</b><span></span><span></span></div>
+							<svg
+								class="hero-mark"
+								viewBox="0 0 1024 765"
+								version="1.1"
+								xmlns="http://www.w3.org/2000/svg"
+								xmlns:xlink="http://www.w3.org/1999/xlink"
+								xml:space="preserve"
+								xmlns:affinity="https://www.affinity.studio/"
+								style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"
+							>
+								<defs>
+									<linearGradient
+										id="heroLogoGradient2"
+										x1="0"
+										y1="0"
+										x2="0"
+										y2="1"
+									>
+										<stop offset="0" stop-color="#ff2fd6" />
+										<stop
+											offset="0.7"
+											stop-color="#e600b8"
+										/>
+										<stop offset="1" stop-color="#b800a0" />
+									</linearGradient>
+								</defs>
+								<g
+									transform="matrix(0.891501,0,0,0.891501,75.401957,136.741152)"
+								>
+									<path
+										d="M271.932,348.987C269.733,355.185 269.271,363.144 268.293,356.577C263.913,327.162 273.552,267.317 269.465,266.654C267.067,266.265 244.527,270.763 236.902,280.819C217.568,306.316 220.487,308.205 189.011,349.125C157.877,389.6 151.024,400.466 154.571,391.515C160.971,375.366 191.215,300.134 185.519,297.467C170.558,290.46 112.544,347.242 88.853,366.92C85.113,370.026 58.886,391.812 39.45,402.315C32.286,406.186 56.346,377.063 43.383,383.246C28.916,390.147 2.661,409.453 2.594,404.486C2.375,388.324 11.126,392.291 20.005,376.248C22.204,372.274 15.182,372.395 17.778,368.7C30.967,349.932 149.803,241.364 148.184,238.717C147.275,237.23 41.156,250.175 40.977,232.472C40.891,223.882 41.982,224.054 41.742,215.489C41.344,201.294 117.218,141.424 167.781,100.854C171.696,97.713 232.78,50.198 238.518,49.624C240.267,49.449 278.279,78.363 272.278,91.388C265.892,105.246 239.835,110.311 227.241,158.432C224.493,168.933 225.851,171.083 222.492,170.537C217.88,169.788 214.487,156.349 197.876,169.943C190.226,176.204 189.396,175.37 189.212,174.605C186.286,162.434 212.045,114.37 209.596,114.16C207.408,113.973 207.726,114.837 187.848,130.926C107.845,195.683 102.003,203.417 110.494,203.677C133.259,204.372 213.434,186.855 207.703,212.548C200.472,244.965 117.857,311.459 151.781,287.964C197.956,255.983 204.35,261.118 246.61,193.569C305.081,100.11 326.282,76.889 327.125,85.568C329.798,113.096 330.373,113.065 330.095,115.451C327.181,140.498 302.127,220.588 313.493,220.316C323.583,220.075 325.742,211.389 347.373,131.463C347.431,131.249 351.043,113.232 355.578,116.378C357.157,117.474 364.403,129.127 372.268,121.255C377.468,116.05 378.24,116.992 378.413,117.54C381.317,126.779 385.212,197.003 390.153,189.169C418.037,144.957 416.461,144.121 460.759,76.669C477.815,50.699 478.095,50.947 486.625,34.598C496.976,14.762 469.794,86.087 480.225,77.097C485.626,72.442 486.087,69.994 487.475,72.51C488.69,74.712 463.553,117.144 477.469,111.414C502.306,101.188 502.988,98.091 510.878,86.817C513.501,83.069 517.584,89.706 517.912,90.239C527.34,105.562 571.945,76.522 579.425,105.518C586.625,133.43 518.679,168.183 531.528,168.204C546.189,168.227 555.692,160.992 574.878,176.081C581.412,181.22 583.315,164.662 613.75,85.597C626.419,52.684 642.731,29.849 660.133,5.058C663.222,0.656 661.698,10.073 661.625,10.52C652.46,67.129 646.08,88.789 595.525,230.509C580.825,271.718 578.318,270.567 575.777,275.639C572.678,281.822 569.411,304.17 585.273,295.093C607.711,282.251 607.699,282.462 630.297,270.125C634.557,267.799 636.144,268.336 635.748,263.483C635.711,263.025 652.936,246.906 666.68,241.959C687.809,234.353 731.736,222.757 715.172,235.066C704.756,242.805 700.581,243.582 701.25,249.499C701.921,255.426 675.31,253.235 620.188,295.098C603.064,308.103 578.116,302.516 561.647,324.613C553.663,335.326 555,339.012 548.546,337.31C543.671,336.023 540.721,328.75 529.413,332.18C493.871,342.96 491.554,340.542 491.865,337.523C492.783,328.609 525.353,313.433 510.526,312.201C502.338,311.521 502.527,310.261 502.877,309.721C505.27,306.023 550.078,284.868 549.792,276.507C548.603,241.808 577.473,204.351 567.42,207.313C566.059,207.713 486.69,301.262 475.572,303.78C448.425,309.93 443.86,335.352 425.439,338.053C412.334,339.974 409.229,339.389 401.975,362.651C397.345,377.501 344.429,547.21 341.482,547.439C339.25,547.613 340.914,545.95 349.196,494.447C363.25,407.046 368.255,408.304 372.054,396.359C376.789,381.475 365.753,370.382 371.289,355.423C382.334,325.576 375.708,324.006 384.876,293.602C392.702,267.649 426.744,169.981 414.654,191.603C387.841,239.552 372.451,275.857 366.305,262.588C356.782,242.03 359.763,195.777 355.863,207.685C330.663,284.621 317.593,381.283 311.138,300.531C308.307,265.115 309.832,265.063 315.182,250.386C320,237.168 307.502,242.633 304.408,250.462C300.786,259.629 300.725,259.783 287.288,372.475C283.738,402.251 283.502,415.772 281.878,405.395C273.257,350.305 273.971,348.988 271.932,348.987ZM474.444,136.904C484.967,140.279 481.849,144.051 477.042,157.342C469.368,178.559 466.523,176.762 458.99,183.953C455.219,187.552 464.554,190.937 462.068,200.383C453.345,233.524 435.45,262.544 433.423,292.495C432.401,307.595 410.273,324.457 411.869,317.551C415.975,299.782 460.059,139.473 465.755,136.969C467.573,136.17 467.605,136.613 474.444,136.904ZM517.566,197.93C526.109,196.52 525.979,196.43 534.548,194.922C539.758,194.005 534.1,200.888 533.134,202.252C524.074,215.05 474.91,260.872 468.371,266.219C465.058,268.929 465.903,263.488 485.897,215.669C491.758,201.651 500.689,201.611 517.566,197.93ZM261.621,237.925C256.158,238.459 251.724,241.283 254.207,236.385C260.05,224.862 271.005,207.774 282.464,185.465C286.013,178.556 282.388,199.104 282.344,199.484C282.101,201.577 280.1,218.805 278.885,225.588C277.043,235.874 274.438,234.585 264.501,237.509C263.396,229.446 261.654,237.694 261.621,237.925ZM539.565,115.901C540.547,115.853 541.514,115.616 542.496,115.568C553.315,115.047 503.534,162.351 506.668,151.534C517.499,114.15 530.198,118.066 539.565,115.901ZM261.621,237.925C261.654,237.694 263.396,229.446 264.501,237.509C263.541,237.647 262.581,237.786 261.621,237.925Z"
+								style="fill-opacity:0.99;"
+							/>
+							<path
+								d="M870.493,22.038C887.768,21.772 917.209,20.058 930.159,32.851C951.452,53.884 946.26,57.258 944.299,59.31C899.337,106.33 825.347,144.525 823.323,152.447C821.95,157.819 942.202,281.73 943.662,287.45C944.662,291.366 931.28,284.075 930.471,284.078C927.093,284.09 929.803,286.517 953.918,319.191C963.329,331.941 983.728,358.178 974.566,351.383C948.983,332.411 875.808,281.932 867.166,275.971C855.647,268.025 871.522,272.314 873.499,272.53C881.946,273.454 872.255,267.978 802.004,193.99C793.277,184.798 788.061,176.976 784.394,185.452C772.039,214.012 775.641,215.587 715.813,332.659C703.67,356.421 693.701,378.06 698.635,359.532C748.253,173.235 758.071,170.181 746.186,158.836C727.304,140.811 751.939,143.987 763.157,131.174C767.671,126.018 783.471,70.531 783.573,69.503C784.264,62.553 741.355,65.55 739.866,64.054C738.257,62.438 740.299,62.538 747.196,58.027C758.087,50.903 718.862,49.197 719.363,45.437C719.551,44.021 835.25,22.649 870.493,22.038ZM862.507,57.963C863.94,57.959 878.907,57.917 880.403,58.676C885.842,61.438 871.369,71.392 870.257,72.157C814.758,110.327 815.386,111.074 810.404,114.138C808.326,115.417 808.825,112.733 817.177,84.397C824.88,58.261 830.889,60.713 862.507,57.963Z"
+								style="fill-opacity:0.99;"
+							/>
+							<path
+								d="M720.472,130.044C733.391,129.943 714.574,138.409 716.197,142.63C718.573,148.811 703.338,151.821 675.497,162.494C670.253,164.505 661.916,186.226 659.207,198.443C656.879,208.944 716.098,179.601 731.199,184.981C742.145,188.88 621.931,253.164 614.303,257.124C600.84,264.113 619.211,246.482 615.748,230.433C614.004,222.349 617.275,223.157 620.39,220.372C623.426,217.657 629.601,212.136 640.097,173.429C641.816,167.09 620.215,161.658 637.658,152.798C649.655,146.704 650.213,146.266 660.109,121.345C664.68,109.833 648.35,108.356 652.965,99.78C659.452,87.726 732.739,76.586 738.539,75.956C757.692,73.873 773.476,80.889 762.369,86.236C713.439,109.79 691.799,105.871 685.871,129.593C684.055,136.858 693.134,134.087 720.472,130.044Z"
+								style="fill-opacity:0.99;"
+							/>
+						</g>
+					</svg>
+						</div>
+					</div>
+				</section>
+
+				<section class="page" id="page-musica">
+					<div class="panel music-empty">
+						<div class="music-empty-inner">
+							<div class="kicker">MÚSICA / SIGNAL OFFLINE</div>
+							<div class="music-symbol">//</div>
+							<h2>Em breve aqui.</h2>
+							<p>
+								Por enquanto, acompanhe a SAMBLER no Instagram
+								da artista.
+							</p>
+							<a
+								class="instagram-card"
+								href="https://www.instagram.com/"
+								target="_blank"
+								rel="noopener"
+								>◎ Acompanhar no Instagram →</a
+							>
+						</div>
+					</div>
+				</section>
+
+				<section class="page" id="page-bio">
+					<div class="section-head">
+						<div>
+							<div class="kicker">ARTISTA / INVESTIGAÇÃO</div>
+							<h2>Bio</h2>
+						</div>
+						<p>
+							Uma trajetória entre comunicação, corpo, cena,
+							comportamento e diferentes linguagens artísticas.
+						</p>
+					</div>
+
+					<div class="bio-grid">
+						<article class="panel bio-main">
+							<h2>SAMBLER</h2>
+							<p>
+								É artista porque precisa investigar o que
+								significa estar no mundo — e porque acredita que
+								existem muitas formas de tocar aquilo que não
+								cabe em uma única linguagem.
+							</p>
+
+							<p>
+								Formada em Relações Públicas e Comunicação pela
+								Universidade Federal de Santa Maria, construiu
+								sua trajetória entre a comunicação, as artes e a
+								investigação do humano. Cursou Bacharelado em
+								Dança na mesma universidade e, atualmente,
+								amplia sua formação em Gestão de Marketing
+								Estratégico e em Arteterapia. Também possui
+								formações em Coaching e PNL e em Hipnose
+								Clínica.
+							</p>
+
+							<p>
+								Sua trajetória artística atravessa a música, a
+								dança, o teatro, a performance, as artes
+								visuais, o audiovisual e a escrita. Já esteve em
+								cena como integrante de companhias teatrais,
+								desenvolveu trabalhos a partir do corpo e da
+								performance e criou espaços próprios de
+								experimentação artística.
+							</p>
+
+							<p>
+								Mais do que reunir diferentes linguagens, sua
+								prática procura compreender o que acontece entre
+								elas — e o que acontece entre as pessoas quando
+								uma obra cria um espaço de encontro.
+							</p>
+
+							<p>
+								Corpo, palavra, som, imagem, memória, presença e
+								experiência tornam-se matérias de uma mesma
+								investigação. Seu trabalho parte do íntimo, mas
+								não permanece nele: transforma vivências,
+								perguntas e percepções em linguagem, buscando
+								criar experiências que possam atravessar também
+								o outro.
+							</p>
+
+							<p>
+								Há, em sua pesquisa, um interesse constante por
+								aquilo que nos constitui e nos transforma:
+								identidade, relações, afetos, ausência, desejo,
+								presença e existência.
+							</p>
+
+							<p>
+								Sua formação em comunicação dialoga com seu
+								interesse pelas relações e pela linguagem; sua
+								experiência com o corpo e a cena amplia essa
+								investigação para a presença; e seus estudos
+								voltados ao comportamento, à criatividade e ao
+								cuidado abrem outras possibilidades de
+								compreender o ser humano.
+							</p>
+
+							<p>
+								Assim, sua produção artística se constrói menos
+								a partir de fronteiras e mais a partir de
+								conexões.
+							</p>
+
+							<p>
+								<strong>Criar, para ela, é uma forma de
+									investigar.</strong>
+							</p>
+							<p>
+								<strong>Investigar é uma forma de existir.</strong>
+							</p>
+							<p>
+								<strong>E a arte é o espaço onde essas duas coisas
+									podem se encontrar.</strong>
+							</p>
+						</article>
+						<aside class="panel">
+							<div class="signal-list">
+								<div class="signal">
+									<b>LINGUAGENS</b><span>Música · dança · teatro · performance ·
+										artes visuais · audiovisual ·
+										escrita</span>
+								</div>
+								<div class="signal">
+									<b>FORMAÇÃO</b><span>Comunicação · Relações Públicas · Dança
+										· Marketing Estratégico ·
+										Arteterapia</span>
+								</div>
+								<div class="signal">
+									<b>PESQUISA</b><span>Identidade · relações · afetos ·
+										ausência · desejo · presença ·
+										existência</span>
+								</div>
+								<div class="signal">
+									<b>SAMBLER</b><span>Uma expressão artística construída a
+										partir de conexões entre
+										linguagens.</span>
+								</div>
+							</div>
+						</aside>
+					</div>
+				</section>
+
+				<section class="page" id="page-news">
+					<div class="section-head">
+						<div>
+							<div class="kicker">SYSTEM LOG / NEWS</div>
+							<h2>News</h2>
+						</div>
+						<p>
+							Atualizações do projeto, lançamentos, shows e novas
+							fases do universo SAMBLER.
+						</p>
+					</div>
+
+					<div class="panel news-list">
+						<article class="news">
+							<div class="news-date">08 / 10 / 2026</div>
+							<div>
+								<h3>SHOW DE LANÇAMENTO</h3>
+								<p>
+									20h — Taverna. Primeira apresentação do
+									projeto SAMBLER nesta nova fase.
+								</p>
+							</div>
+						</article>
+						<article class="news">
+							<div class="news-date">EM BREVE</div>
+							<div>
+								<h3>PRÉ-SAVE</h3>
+								<p>
+									Links oficiais de pré-save e plataformas
+									serão ativados quando a campanha estiver
+									pronta.
+								</p>
+							</div>
+						</article>
+						<article class="news">
+							<div class="news-date">EM BREVE</div>
+							<div>
+								<h3>ÁREA DE MEMBROS</h3>
+								<p>
+									Acesso pago a conteúdos exclusivos,
+									materiais de bastidores e arquivos especiais
+									para membros.
+								</p>
+							</div>
+						</article>
+					</div>
+				</section>
+
+				<section class="page" id="page-membros">
+					<div id="membersPublic">
+						<div class="section-head">
+							<div>
+								<div class="kicker">ACCESS / PRIVATE AREA</div>
+								<h2>Membros</h2>
+							</div>
+							<p>
+								Uma área fechada para quem compra o acesso e
+								apoia a artista. O conteúdo exclusivo fica aqui
+								dentro.
+							</p>
+						</div>
+
+						<div class="members-shell">
+							<article class="panel members-intro">
+								<span class="eyebrow"
+									>apoie a artista / desbloqueie</span
+								>
+								<h2>Entre no<br />lado oculto.</h2>
+								<p>
+									O acesso aos conteúdos exclusivos será
+									liberado para membros. Aqui ficarão
+									materiais que não fazem parte da área
+									pública do site.
+								</p>
+								<div class="exclusive">
+									<div>▣ Conteúdo exclusivo</div>
+									<div>♫ Músicas / versões</div>
+									<div>◈ Bastidores</div>
+									<div>⇩ Downloads</div>
+								</div>
+							</article>
+
+							<article class="panel login-panel">
+								<h3>Acesso de membro</h3>
+								<p class="sub">Use seu login privado para entrar.</p>
+								
+								<form id="loginForm" onsubmit="return false;"> 
+									<div class="field">
+										<label for="loginUser">Usuário</label>
+										<input
+											id="loginUser"
+											autocomplete="username"
+											placeholder="seu usuário"
+											required
+										/>
+									</div>
+									<div class="field">
+										<label for="loginPass">Senha</label>
+										<input
+											id="loginPass"
+											type="password"
+											autocomplete="current-password"
+											placeholder="sua senha"
+											required
+										/>
+									</div>
+									<button
+										class="btn btn-primary"
+										id="loginBtn"
+										type="submit" 
+									>
+										Entrar na área
+									</button>
+								</form>
+								
+								<div class="login-msg" id="loginMsg" aria-live="polite"></div>
+
+								<div class="access-buy">
+									<span>Ainda não é membro?</span>
+									<a href="#" id="supportLink">Comprar acesso à área de membros →</a>
+								</div>
+							</article>
+						</div>
+					</div>
+
+					<div id="privateArea" class="private-area">
+						<div class="section-head">
+							<div>
+								<div class="kicker">ACCESS GRANTED</div>
+								<h2>Área privada</h2>
+							</div>
+							<p id="memberWelcome">Conteúdo reservado.</p>
+						</div>
+						<div class="panel">
+							<div class="private-grid">
+								<div class="private-card">
+									<div class="ico">♫</div>
+									<h4>Músicas</h4>
+									<p>
+										Espaço reservado para faixas e versões
+										exclusivas.
+									</p>
+								</div>
+								<div class="private-card">
+									<div class="ico">⌁</div>
+									<h4>Instrumentais</h4>
+									<p>Arquivos e versões para membros.</p>
+								</div>
+								<div class="private-card">
+									<div class="ico">▤</div>
+									<h4>Letras</h4>
+									<p>Letras e materiais de produção.</p>
+								</div>
+								<div class="private-card">
+									<div class="ico">◈</div>
+									<h4>Artes</h4>
+									<p>
+										Capas, wallpapers e identidade visual.
+									</p>
+								</div>
+								<div class="private-card">
+									<div class="ico">▶</div>
+									<h4>Bastidores</h4>
+									<p>
+										Vídeos, processos e conteúdos de dentro
+										do projeto.
+									</p>
+								</div>
+								<div class="private-card">
+									<div class="ico">⇩</div>
+									<h4>Downloads</h4>
+									<p>
+										Arquivos disponibilizados exclusivamente
+										aos membros.
+									</p>
+								</div>
+							</div>
+							<button class="logout" id="logoutBtn">
+								sair da área privada
+							</button>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<footer>
+				SAMBLER / 32Urecords / 1006 produtora &nbsp; / &nbsp;
+				<strong>© 2026 </strong>
+			</footer>
+		</div>
+
+		<script>
+			const particleField = document.getElementById("particles");
+			if (particleField) {
+			  for (let i = 0; i < 52; i++) {
+			    const p = document.createElement("i");
+			    p.className = "particle" + (i % 3 === 0 ? " p" : "");
+			    p.style.left = (Math.random() * 100) + "%";
+			    p.style.top = (Math.random() * 100) + "%";
+			    p.style.setProperty("--x", ((Math.random() - .5) * 180) + "px");
+			    p.style.setProperty("--d", (5 + Math.random() * 10) + "s");
+			    p.style.animationDelay = (-Math.random() * 10) + "s";
+			    particleField.appendChild(p);
+			  }
+			}
+
+			const CONFIG = {
+			  INSTAGRAM_URL: "https://www.instagram.com/brilhecomosol",
+			  SPOTIFY_URL: "https://open.spotify.com/artist/04N14q2hERc5qtV2l3RbUZ",
+			  YOUTUBE_URL: "https://www.youtube.com/@sambleroficial",
+			  SUPPORT_URL: "https://privacy.com.br/@SamblerOficial"
+			};
+
+			document.querySelectorAll("#mainNav a[data-page]").forEach(link => {
+			  link.addEventListener("click", e => {
+			    e.preventDefault();
+			    goTo(link.dataset.page);
+			  });
+			});
+
+			document.querySelectorAll("[data-page-link]").forEach(link => {
+			  link.addEventListener("click", e => {
+			    const page = link.dataset.pageLink;
+			    if(page) {
+			      e.preventDefault();
+			      goTo(page);
+			    }
+			  });
+			});
+
+			document.querySelector(".brand").addEventListener("click", e => {
+			  e.preventDefault();
+			  goTo("home");
+			});
+
+			function goTo(page) {
+			  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + page));
+			  document.querySelectorAll("#mainNav a").forEach(a => a.classList.toggle("active", a.dataset.page === page));
+			  window.scrollTo({top:0,behavior:"smooth"});
+			}
+
+			document.getElementById("presaveBtn").addEventListener("click", e => {
+			  e.preventDefault();
+			  goTo("musica");
+			});
+
+			document.querySelectorAll(".instagram-card").forEach(a => a.href = CONFIG.INSTAGRAM_URL);
+
+			const supportLink = document.getElementById("supportLink");
+			supportLink.href = CONFIG.SUPPORT_URL;
+			supportLink.addEventListener("click", e => {
+			  if(CONFIG.SUPPORT_URL === "#") {
+			    e.preventDefault();
+			    document.getElementById("loginMsg").textContent = "Configure o link de pagamento em CONFIG.SUPPORT_URL.";
+			  }
+			});
+
+			// Lógica de Login Corrigida (Enter Funciona)
+			const loginForm = document.getElementById("loginForm");
+			const loginUser = document.getElementById("loginUser");
+			const loginPass = document.getElementById("loginPass");
+			const loginBtn = document.getElementById("loginBtn");
+			const loginMsg = document.getElementById("loginMsg");
+			const membersPublic = document.getElementById("membersPublic");
+			const privateArea = document.getElementById("privateArea");
+			const memberWelcome = document.getElementById("memberWelcome");
+
+			async function tryLogin() {
+			  const user = loginUser.value.trim();
+			  const pass = loginPass.value;
+
+			  if(!user || !pass) {
+			    loginMsg.textContent = "Preencha usuário e senha.";
+			    return;
+			  }
+
+			  loginBtn.disabled = true;
+			  loginMsg.textContent = "Verificando…";
+
+			  try {
+			    const res = await fetch("/.netlify/functions/members-login", {
+			      method: "POST",
+			      headers: { "Content-Type": "application/json" },
+			      body: JSON.stringify({ user, pass })
+			    });
+			    const data = await res.json();
+
+			    if(!res.ok || !data.ok) {
+			      loginMsg.textContent = "Usuário ou senha inválidos.";
+			      return;
+			    }
+
+			    loginMsg.textContent = "";
+			    membersPublic.style.display = "none";
+			    privateArea.classList.add("visible");
+			    memberWelcome.textContent = "Acesso liberado para " + data.name + ".";
+			  } catch (err) {
+			    loginMsg.textContent = "Erro de conexão. Tente novamente.";
+			  } finally {
+			    loginBtn.disabled = false;
+			  }
+			}
+
+			loginForm.addEventListener("submit", e => {
+			  e.preventDefault();
+			  tryLogin();
+			});
+
+			document.getElementById("logoutBtn").addEventListener("click", () => {
+			  privateArea.classList.remove("visible");
+			  membersPublic.style.display = "";
+			  loginUser.value = "";
+			  loginPass.value = "";
+			  loginMsg.textContent = "";
+			});
+		</script>
+	</body>
 </html>
-```
